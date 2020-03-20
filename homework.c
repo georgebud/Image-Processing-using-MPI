@@ -1,5 +1,5 @@
 /*
- * TEMA3
+ * 
  * Algoritmi Paraleli si Distribuiti
  * Budau George 332CC
  *
