@@ -1,5 +1,5 @@
-build: tema3
-tema3: tema3.c
-	mpicc tema3.c -o tema3 -lm
+build: homework
+tema3: homework.c
+	mpicc homework.c -o homework -lm
 clean:
-	rm -f tema3
+	rm -f homework
