@@ -291,7 +291,7 @@ int main(int argc, char *argv[]) {
     float f[3][3];
 
     if (argc < 4) {
-        printf("Usage: mpirun -np N ./tema3 image_in.pnm image_out.pnm filter1 filter2 ... filterX\n");
+        printf("Usage: mpirun -np N ./homework image_in.pnm image_out.pnm filter1 filter2 ... filterX\n");
         exit(-1);
     }
 
