@@ -1,0 +1,53 @@
+Budau George 332CC
+Tema3 APD 	-= README =-
+
+Pentru realizarea acestei teme am implementat o structura, IMG, in care 
+sunt pastrate tipurile celor 2 imagini: color si alb-negru. Acestea din 
+urma reprezinta fiecare cate o structura: RGB respectiv BW, care stocheaza
+pixelii in format unsigned_char.
+
+Citirea imaginii se face in functia readFile: primeste ca parametru 
+fisierul de citit si o structura IMG. Se va citi conform formatului
+descris in cerinta. De pe prima linie se va citi tipul fisierului: P5 
+(reprezentand imagine alb-negru), respectiv P6 (imagine color) si va fi
+stocat in variabila globala TYPE. Urmatoarea linie va fi ignorata intrucat 
+este formata dintr-un comentariu. Se citeste in continuare WIDTH, HEIGHT si
+MAX_VAL. In functie de tipul imaginii se aloca memorie pentru matricea in
+care se vor stoca datele ce formeaza imaginea propriu-zis. Aceasta functie 
+este apelata de primul proces (procesul master) care va trimite datele si
+celorlalte procese (daca exista).
+
+Scrierea imaginii se face in functia writeFile: primeste ca parametru 
+fisierul de scris si o structura IMG. Se va scrie conform formatului 
+descris in cerinta. Aceasta functie va fi apelata dupa prelucrarea 
+imaginii (aplicarea filtrelor necesare) de catre procesul master. 
+
+Functia initFilters primeste ca parametru structura FILTER si 
+initializeaza matricile in functie de filtrul respectiv (smooth, blur, 
+sharpen, mean, emboss).
+
+Functia initImage primeste ca parametru tipul imaginii si o structura de 
+tip IMG. Aceasta aloca memorie matricii in functie de tip.
+
+Functionare: In functie de numarul de procese cu care programul ruleaza 
+matricea este impartita intr-un numar de intervale egale. In fiecare 
+proces sunt prelucrate date din cate un interval (functiile ProcessingBW, 
+respectiv ProcessingRGB), aplicandu-se filtrele care se doresc a fi 
+aplicate (date ca argumente executabililui). In final primul proces 
+primeste de la celelalte procese intervalele de imagine procesate, 
+adauga si datele din margini si formeaza imaginea finala (cu filtrele aplicate).    
+
+Scalabilitate (timpii de executie dupa 100 de repetari pentru fiecare NP)
+
+-= baby-yoda.pnm =-
+
+nr. proc 	blur	smooth		sharpen		emboss 		mean	bssembssem
+	2		1.325s	1.396s		1.292s		1.342s		1.302s	8.234s
+	3 		1.194s	1.204s		1.191s		1.227s		1.224s	8.043s
+	4		1.059s	1.055s		1.053s		1.081s		1.075s	7.893s
+
+-= darth-vader.pgm =-
+
+	2 		0.213s	0.201s		0.282s		0.265s		0.271s	1.174s
+	3 		0.199s	0.190s		0.208s		0.201s		0.232s	1.065s
+	4		0.158s	0.173s		0.171s		0.189s		0.194s	0.900s
