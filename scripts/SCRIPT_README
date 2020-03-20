@@ -1,0 +1,227 @@
+Scripturile trebuie sa fie in acelasi director cu folder-ul
+"Colectie Poze" si folder-ul "ref" date de ei si cu "Makefile"-ul
+propriu. Scriptul va rula make & va testa corectiduinea SAU
+scalabilitatea.
+
+
+./test-mpi.sh -> verifica corectitudinea
+./test-mpi-scal.sh -> afiseaza frumix timpii de executie
+(un fel de format tablar)
+
+--------------------------------------------------------
+--------------------------------------------------------
+----------- Scriptul de verificare corectiudine --------
+--------------------------------------------------------
+--------------------------------------------------------
+
+Foloseste diff; deci imaginile de output trebuie sa fie identice
+cu cele date de ei. Asadar, pentru un "\n" in plus la final sau
+o diferenta de "1" intre 2 pixeli, scriptul o sa zica "NOT OK".
+
+Daca ai un folder numit "out" in working dir, va fi sters de
+catre checker (si inlocuit cu un folder care contine fisierele
+obtinute in urma rularii script-ului)
+
+
+
+In cazul in care e vreo diferenta intre output si ref, va afisa:
+
+"filter: smooth                           NOT OK for NP=1...STOPPING this test"
+
+si nu va mai continua cu NP = 2, NP = 3 pentru acelasi filtru (va
+testa in continuare celelalte filtre NP = 1 ..  8)
+
+
+
+		SINTAXA:
+
+./test-mpi.sh [NP] [FILE]
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+"FILE" trebuie sa fie DOAR numele fisierului, fara EXTENSIE
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Script-ul va testa corectitudinea pentru un nr de procese de la
+1 pana la NP pe fisierul "FILE" (script-ul incearca sa testeze
+atat pe "FILE.pgm", cat si pe "FILE.pnm"; daca una dintre aceste
+doua nu exista, va afisa in terminal). Ambii parametrii sunt
+optionali, dar daca daca vrei sa pui un anume "FILE", va trebui
+specificat obligatoriu si "NP".
+
+
+
+		EXEMPLE:
+
+"./test-mpi.sh" va testa corectitudinea pentru:
+ * NP = 1, NP = 2, ... NP = 8
+ * imaginile (default) "macro.pgm", "macro.pnm"
+
+
+"./test-mpi.sh 3" va testa corectiduinea pentru
+ * NP = 1, NP = 2, NP = 3
+ * imaginile (default) "macro.pgm", "macro.pnm"
+
+
+"./test-mpi.sh 3 landscape" va testa corectiduinea pentru
+ * NP = 1, NP = 2, NP = 3
+ * imaginile "landscape.pgm", "landscape.pnm"
+
+
+"./test-mpi.sh 1 despicable-me" va testa corectitudinea pentru
+ * NP = 1
+ * imaginile "despicable-me.pgm" si "despicable-me.pnm" (din
+ cauza ca "despicable-me.pnm" nu exista in "Colectie Poze/PNM",
+ va afisa:
+ 	"
+	------------------------------TESTING pnm------------------------------
+	Colectie Poze/PNM/despicable-me.pnm doesn't exist
+	"
+ dar va testa corectitudinea pentru "despicable-me.pgm"
+)
+
+
+
+
+
+
+--------------------------------------------------------
+--------------------------------------------------------
+---------- Scriptul de verificare scalabilitatea -------
+--------------------------------------------------------
+--------------------------------------------------------
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+   NU VERIFICA CORECTITUDINEA, CI DOAR SCALABILITATAEA
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+		Sintaxa:
+
+"./test-mpi-scal.sh [NP] [REPS] [FILE]"
+
+		EXEMPLE:
+
+"./test-mpi-scal.sh" testeaza scalabilitatea pentru:
+ * NP = 1, NP = 2, ... NP = 8
+ * Repeta de 10 ori pentru fiecare NP. (adica va rula cu NP = 1
+ de 10 ori, NP = 2 de 10 ori, ..., NP = 8 de 10 ori)
+ * imaginile "macro.pgm", "macro.pnm"
+
+"./test-mpi-scal.sh 4 5" testeaza scalabilitatea pentru:
+ * NP = 1, NP = 2, ... NP = 4
+ * Repeta de 5 ori pentru fiecare NP. (adica va rula cu NP = 1
+ de 5 ori, NP = 2 de 5 ori, ..., NP = 4 de 5 ori)
+ * imaginile "macro.pgm", "macro.pnm"
+
+
+"./test-mpi-scal.sh 4 5 darth-vader" testeaza scalabilitatea pentru:
+ * NP = 1, NP = 2, ... NP = 4
+ * Repeta de 5 ori pentru fiecare NP. (adica va rula cu NP = 1
+ de 5 ori, NP = 2 de 5 ori, ..., NP = 4 de 5 ori)
+ * imaginile "darth-vader.pgm", "darth-vader.pnm". La fel ca la cel
+ de corectitudine, pentru ca nu exista "darth-vader.pnm" o sa ruleze
+ doar pentru varianta "pgm", afisand ca nu exist varianta "pnm".
+
+
+Output-ul arata ceva gen:
+
+Running for NP = 1 .. 4
+Running each test 5 times
+Running default; image "macro"
+Running make...
+mpicc -std=c99 main.c -lm -o tema3
+Running make... DONE
+-----------------------------TESTING pgm------------------------------
+Testing filters on file: Colectie Poze/PGM/macro.pgm
+
+Running for NP =            1       2       3       4
+filter: smooth             T1      T2      T3      T4
+filter: blur               T1      T2      T3      T4
+filter: sharpen            T1      T2      T3      T4
+filter: mean               T1      T2      T3      T4
+filter: emboss             T1      T2      T3      T4
+filters: bssembssem        T1      T2      T3      T4
+
+------------------------------TESTING pnm------------------------------
+Testing filters on file: Colectie Poze/PNM/macro.pnm
+
+Running for NP =            1       2       3       4
+filter: smooth             T1      T2      T3      T4
+filter: blur               T1      T2      T3      T4
+filter: sharpen            T1      T2      T3      T4
+filter: mean               T1      T2      T3      T4
+filter: emboss             T1      T2      T3      T4
+filters: bssembssem        T1      T2      T3      T4
+
+
+unde T1, T2, T3, T4 arata ceva gen: 3.788
+
+
+
+-------------------------------------------------------
+-------------------------------------------------------
+-------------------------------------------------------
+-------------------------------------------------------
+
+
+Nu are legatura cu "checker-ul", dar ajuta in cazul in care dureaza
+mult prea mult sa testezi local. Ca idee, la mine rularea filtrului
+"smooth" pe "macro" de 5 ori cu NP = 1, dureaza ~2s pe o masina
+disponibila de pe fep (mai exact, 2 x 12-core Intel Xeon X5650)
+fata de cateva zeci pe local (in docker).
+
+How to:
+
+1.
+
+ssh user@fep.grid.pub.ro
+
+
+
+2.
+
+mkdir "apd"
+
+3. Dintr-un alt terminal, pentru a copia fisierele dintr-un director
+pe fep:
+
+scp -r /path/catre/folderul/cu/tema/ user@fep.grid.pub.ro:/apd
+
+
+
+4. Din primul terminal (cel conectat pe "fep.grid.pub.ro"):
+
+qlogin -q hp-sl.q
+
+te va conecta la un host dat de facultate (care are
+2 x 12-core Intel Xeon X5650). Pentru mai multe detalii:
+http://cs.curs.pub.ro/wiki/asc/_media/asc:resurse:cluster-cheat-sheet.pdf
+
+Fisierele de pe fep sunt impartasite cu cele de pe masina asta.
+
+
+
+5. Pentru a instala mpi:
+
+module load libraries/openmpi-2.0.1-gcc-5.4.0
+
+
+
+6. Poti testa script-urile ca pe local.
+
+
+
+7. Daca te deconectezi pe masina "hp-sl", va trebui sa repeti
+pasul 5.
+
+
+
+Recomand sa redirectezi output-ul script-ului intr-un alt fisier
+deoarece sunt sanse ca la un moment dat sa te deconecteze si sa nu-ti
+afiseze tot output-ul (desi script-ul a rulat ok):
+
+  ./test-mpi-scal.sh > scal.txt
